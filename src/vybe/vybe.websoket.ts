@@ -11,7 +11,7 @@ import { WebSocket } from 'ws';
 @Injectable()
 export class VybeWebsocket implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(VybeWebsocket.name);
-  private ws: WebSocket;
+  private ws: WebSocket | null = null;
   private readonly websocketUri = 'https://api.vybenetwork.xyz/live';
   private readonly apiKey = process.env.VYBE_API_KEY;
   private enableReconnect = true;
@@ -26,10 +26,22 @@ export class VybeWebsocket implements OnModuleInit, OnModuleDestroy {
   }
 
   onModuleDestroy() {
-    this.ws?.close();
+    // Clean up the websocket if it exists
+    if (this.ws) {
+      this.ws.removeAllListeners();
+      this.ws.close();
+      this.ws = null;
+    }
   }
 
   private connectToVybe() {
+    // If an old connection exists, clean it up first
+    if (this.ws) {
+      this.ws.removeAllListeners();
+      this.ws.close();
+      this.ws = null;
+    }
+
     this.ws = new WebSocket(this.websocketUri, {
       headers: { 'X-API-Key': this.apiKey },
     });
@@ -47,20 +59,19 @@ export class VybeWebsocket implements OnModuleInit, OnModuleDestroy {
         type: 'configure',
         filters: {
           transfers: walletAddresses.map((address) => ({
-                tokenMintAddress: address.value,
-                minAmount: 1000000000,
-                maxAmount: 5000000000,
-              })),
-          
+            tokenMintAddress: address.value,
+            minAmount: 1000000000,
+            maxAmount: 5000000000,
+          })),
         },
       });
-      this.ws.send(configureMessage);
+      this.ws?.send(configureMessage);
     });
 
     this.ws.on('message', async (data: string) => {
       try {
         const message = JSON.parse(data);
-        // this.logger.log(`Received: ${JSON.stringify(message)}`);
+        // this.logger.log(`messsage: ${message}`);
         // Extract data
         const { senderAddress, receiverAddress, amount, decimal, signature } =
           message;
@@ -71,18 +82,17 @@ export class VybeWebsocket implements OnModuleInit, OnModuleDestroy {
 
         // Check sender and receiver separately
         const senderSubscription = subscribedWallets.find((sub) =>
-          sub.addresses.some(addr => addr.value === senderAddress),
+          sub.addresses.some((addr) => addr.value === senderAddress),
         );
         const receiverSubscription = subscribedWallets.find((sub) =>
-          sub.addresses.some(addr => addr.value === receiverAddress),
+          sub.addresses.some((addr) => addr.value === receiverAddress),
         );
 
         if (senderSubscription || receiverSubscription) {
-    
-          const msgAlert = `Transaction detected for subscribed wallet: ${senderAddress} -> ${receiverAddress} ->  [View on Explorer](https://explorer.solana.com/tx/${signature})`
+          const msgAlert = `Transaction detected for subscribed wallet: ${senderAddress} -> ${receiverAddress} ->  [View on Explorer](https://explorer.solana.com/tx/${signature})`;
           await this.telegramService.sendMarkdownMessage(
             msgAlert,
-            senderSubscription.telegramUserId,
+            senderSubscription?.telegramUserId,
           );
 
           if (formattedAmount >= 3) {
@@ -112,6 +122,11 @@ export class VybeWebsocket implements OnModuleInit, OnModuleDestroy {
 
     this.ws.on('close', () => {
       this.logger.warn('WebSocket closed');
+      // Clean up the current connection to free memory
+      if (this.ws) {
+        this.ws.removeAllListeners();
+        this.ws = null;
+      }
       if (this.enableReconnect) {
         setTimeout(() => this.connectToVybe(), 5000);
       }

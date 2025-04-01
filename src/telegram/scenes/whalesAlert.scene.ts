@@ -23,6 +23,7 @@ export class WhalesAlertScene {
 
   @WizardStep(1)
   async step2(@Context() ctx) {
+    ctx.scene.leave();
     ctx.wizard.state.userData = {};
     await ctx.reply('Enter mint address:');
     ctx.wizard.next();
@@ -51,7 +52,8 @@ export class WhalesAlertScene {
       );
 
       await ctx.deleteMessage(Loading.message_id);
-     return ctx.reply(`✅ Tracking mint address for 🐋 Whale Alert!: ${userData.mintAddress}`);
+      ctx.reply(`✅ Tracking mint address for 🐋 Whale Alert!: ${userData.mintAddress}`);
+      // ctx.scene.leave();
     } catch (error) {
       await ctx.reply('❌ Error. Try again later.');
     }

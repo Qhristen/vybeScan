@@ -21,6 +21,7 @@ export class TokenMetricsScene {
 
   @WizardStep(1)
   async step2(@Context() ctx) {
+    ctx.scene.leave();
     ctx.wizard.state.userData = {};
     await ctx.reply('Enter mint address:');
     ctx.wizard.next();

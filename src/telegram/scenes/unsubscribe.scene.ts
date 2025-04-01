@@ -23,6 +23,7 @@ export class UnsubscribeScene {
 
   @WizardStep(1)
   async step2(@Context() ctx) {
+    ctx.scene.leave();
     ctx.wizard.state.userData = {};
     await ctx.reply('Enter address:');
     ctx.wizard.next();

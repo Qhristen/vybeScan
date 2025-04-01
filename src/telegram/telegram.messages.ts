@@ -3,7 +3,7 @@ export const BOT_MESSAGES = {
   START_MESSAGE:
     'Available commands:\n\n' +
     '• /showportfolio - Get provided walet portfolio\n\n' +
-    '• /trackwallet - Receive alerts for transactions on that wallet\n\n' +
+    // '• /trackwallet - Receive alerts for transactions on that wallet\n\n' +
     '• /tokenmetrics- Shows real-time liquidity, volume, holders\n\n' +
     '• /whalealert- Sends notifications for large transactions\n\n' +
     '• /checknftowner - Check if address owns an NFT from a collection\n\n' +

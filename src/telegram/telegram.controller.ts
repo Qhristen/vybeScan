@@ -129,19 +129,18 @@ export class TelegramController {
         return ctx.reply('You are not subscribed to any address.');
       }
 
-  //     const walletList = subscription.addresses
-  //       .map(
-  //         (addr) => `\`\`\`
-  //   📋 ${addr.name}
-  //   ----------------------------
-  //  ${addr.value}
-  //   ----------------------------
-  //   \`\`\``,
-  //       )
-  //       .join('\n');
-  //     await ctx.deleteMessage(Loading.message_id);
-  //     ctx.replyWithMarkdownV2(`${walletList}`);
-      ctx.reply(' fetching your subscriptions.');
+      const walletList = subscription.addresses
+        .map(
+          (addr) => `\`\`\`
+    📋 ${addr.name}
+    ----------------------------
+   ${addr.value}
+    ----------------------------
+    \`\`\``,
+        )
+        .join('\n');
+      await ctx.deleteMessage(Loading.message_id);
+      ctx.replyWithMarkdownV2(`${walletList}`);
 
     } catch (error) {
       ctx.reply('An error occurred while fetching your subscriptions.');
