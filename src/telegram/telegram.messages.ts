@@ -4,9 +4,10 @@ export const BOT_MESSAGES = {
     'Available commands:\n\n' +
     '• /showportfolio - Get provided walet portfolio\n\n' +
     // '• /trackwallet - Receive alerts for transactions on that wallet\n\n' +
-    '• /tokenmetrics- Shows real-time liquidity, volume, holders\n\n' +
+    '• /token_detail- Useful for overview of a token\'s past 24 hours\' activity.\n\n' +
     '• /whalealert- Sends notifications for large transactions\n\n' +
     '• /checknftowner - Check if address owns an NFT from a collection\n\n' +
+    '• /token_holders - Retrieves the top 10 token holders. Data is updated every three hours\n\n' +
     '• /subscriptions - Show all subscriptions\n\n' +
     // '• /subscribeor - subscribe to notifications\n\n'+
     '• /unsubscribe  - Unsubscribe from notifications\n\n',

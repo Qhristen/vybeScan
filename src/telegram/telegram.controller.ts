@@ -63,7 +63,7 @@ export class TelegramController {
   //   }
   // }
 
-  @Command('tokenmetrics')
+  @Command('token_detail')
   async tokenmetrics(ctx): Promise<any> {
     try {
       await ctx.scene.enter(SCENES.TOKEN_METRICS, {});
@@ -87,6 +87,14 @@ export class TelegramController {
       await ctx.scene.enter(SCENES.SHOW_PORTFOLIO, {});
     } catch (error) {
       console.log('SHOW_PORTFOLIO :::', error.message);
+    }
+  }
+  @Command('token_holders')
+  async tokenHolders(ctx): Promise<any> {
+    try {
+      await ctx.scene.enter(SCENES.TOKEN_HOLDERS, {});
+    } catch (error) {
+      console.log('TOKEN_HOLDERS :::', error.message);
     }
   }
 

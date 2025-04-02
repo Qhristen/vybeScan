@@ -14,6 +14,7 @@ import { WhalesAlertScene } from './scenes/whalesAlert.scene';
 import { TelegramController } from './telegram.controller';
 import { TelegramService } from './telegram.service';
 import { UnsubscribeScene } from './scenes/unsubscribe.scene';
+import { TokenHoldersScene } from './scenes/tokenHolders.scene';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { UnsubscribeScene } from './scenes/unsubscribe.scene';
     WhalesAlertScene,
     TrackWalletScene,
     UnsubscribeScene,
+    TokenHoldersScene,
     TelegramController,
   ],
   exports: [TelegramService],

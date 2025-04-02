@@ -3,6 +3,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { VybeService } from './vybe.service';
 import { SubscriptionModule } from 'src/subscription/subscription.module';
 import { TelegramModule } from 'src/telegram/telegram.module';
+import { VybeWebsocket } from './vybe.websoket';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { TelegramModule } from 'src/telegram/telegram.module';
     forwardRef(() => TelegramModule),
   ],
   controllers: [],
-  providers: [VybeService],
+  providers: [VybeService, VybeWebsocket],
   exports: [VybeService],
 })
 export class VybeModule {}

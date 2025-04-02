@@ -18,23 +18,35 @@ export class NFTCollectionAddressCheckerScene {
 
   @WizardStep(1)
   async step2(@Context() ctx) {
-    ctx.scene.leave();
-    ctx.wizard.state.userData = {};
-    await ctx.reply("Enter collection address:");
-    ctx.wizard.next(); 
+    try {
+
+      ctx.wizard.state.userData = {};
+      await ctx.reply("Enter collection address:");
+      ctx.wizard.next(); 
+      
+    } catch (error) {
+      console.log(error, "err")
+      ctx.scene.leave();
+    }
   }
 
   @WizardStep(2)
   async step3(@Context() ctx) {
-    if (!ctx.message || !ctx.message.text) {
-      await ctx.reply("Invalid input. Please enter a valid collection address:");
-      return;
+    try {
+      
+      if (!ctx.message || !ctx.message.text) {
+        await ctx.reply("Invalid input. Please enter a valid collection address:");
+        return;
+      }
+  
+      ctx.wizard.state.userData.collectionAddress = ctx.message.text.trim();
+      await ctx.reply("Enter wallet address:");
+      
+      ctx.wizard.next();
+    } catch (error) {
+      console.log(error, "err")
+      ctx.scene.leave();
     }
-
-    ctx.wizard.state.userData.collectionAddress = ctx.message.text.trim();
-    await ctx.reply("Enter wallet address:");
-    
-    ctx.wizard.next();
   }
 
   @WizardStep(3)
@@ -58,10 +70,11 @@ export class NFTCollectionAddressCheckerScene {
       } else {
         await ctx.reply(`❌ Wallet ${userData.walletAddress} does NOT own an NFT from the collection.`);
       }
+      ctx.scene.leave();
     } catch (error) {
-      await ctx.reply("❌ Error checking ownership. Try again later.");
+      console.log(error, "err")
+      ctx.scene.leave();
     }
 
-    ctx.scene.leave();
   }
 }

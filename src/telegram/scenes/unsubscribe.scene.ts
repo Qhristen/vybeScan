@@ -23,7 +23,7 @@ export class UnsubscribeScene {
 
   @WizardStep(1)
   async step2(@Context() ctx) {
-    ctx.scene.leave();
+
     ctx.wizard.state.userData = {};
     await ctx.reply('Enter address:');
     ctx.wizard.next();
@@ -48,11 +48,12 @@ export class UnsubscribeScene {
       );
 
       await ctx.deleteMessage(Loading.message_id);
-       ctx.reply(response.message);
-    } catch (error) {
-      await ctx.reply('❌ Error. Try again later.');
-    }
+      ctx.reply(response.message);
+      ctx.scene.leave();
+      } catch (error) {
+        console.log(error, "err")
+        ctx.scene.leave();
+      }
 
-    ctx.scene.leave();
   }
 }

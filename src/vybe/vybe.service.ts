@@ -22,6 +22,7 @@ export class VybeService {
       const response = await firstValueFrom(
         this.httpService.get(url, { headers }),
       );
+
       return response.data;
     } catch (error) {
       console.error('Vybe API Error:', error);
@@ -37,8 +38,23 @@ export class VybeService {
       const response = await firstValueFrom(
         this.httpService.get(url, { headers }),
       );
-
       return response.data;
+    } catch (error) {
+      console.error('Vybe API Error:', error);
+      return null;
+    }
+  }
+
+  async getTopTokenHolders(mintAddress: string): Promise<any> {
+    const url = `${this.API_URL}/token/${mintAddress}/top-holders`;
+    const headers = { 'X-API-Key': this.API_KEY };
+
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(url, { headers }),
+      );
+      console.log(response.data.data, "res")
+      return response.data.data.slice(0, 10);
     } catch (error) {
       console.error('Vybe API Error:', error);
       return null;
@@ -68,11 +84,11 @@ export class VybeService {
       const response = await firstValueFrom(
         this.httpService.get(url, { headers }),
       );
-      console.log(response.data, "res")
+
       return response.data?.transfers;
     } catch (error) {
       console.error('❌ Error fetching transactions:', error.message);
-      return [];
+      
     }
   }
 }

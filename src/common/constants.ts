@@ -10,6 +10,7 @@ export const SCENES = {
   TOKEN_METRICS: 'tokenMetrics',
   TRACK_WALLET: 'trackWallet',
   WHALE_ALERT: 'whaleAlert',
+  TOKEN_HOLDERS: 'tokenHolders',
   UNSUBSCRIBE: 'unsubscribe',
 };
 

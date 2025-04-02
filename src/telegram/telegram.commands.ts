@@ -17,8 +17,12 @@ export const COMMANDS = [
   //   description: 'Receive alerts for transactions on that wallet',
   // },
   {
-    command: '/tokenmetrics',
-    description: 'Shows real-time liquidity, volume, holders',
+    command: '/token_holders',
+    description: 'Retrieves the top 10 token holders. Data is updated every three hours',
+  },
+  {
+    command: '/token_detail',
+    description: `Useful for overview of a token's past 24 hours' activity.`,
   },
   {
     command: '/whalealert',

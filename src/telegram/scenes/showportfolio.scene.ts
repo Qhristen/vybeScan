@@ -21,7 +21,6 @@ export class ShowPortfolioScene {
 
   @WizardStep(1)
   async step2(@Context() ctx) {
-    ctx.scene.leave();
     ctx.wizard.state.userData = {};
     await ctx.reply('Enter wallet address:');
     ctx.wizard.next();
@@ -33,7 +32,6 @@ export class ShowPortfolioScene {
       await ctx.reply('Invalid input. Please enter a valid wallet address:');
       return;
     }
-
     const walletAddress = ctx.message.text.trim();
     ctx.wizard.state.userData.walletAddress = walletAddress;
     const { userData } = ctx.wizard.state;
@@ -43,16 +41,13 @@ export class ShowPortfolioScene {
       const response = await this.vybeService.tokenBalances(
         userData.walletAddress,
       );
-      if (!response) {
-        return ctx.reply('❌ No tokens found.');
-      }
 
       await ctx.deleteMessage(Loading.message_id);
       ctx.replyWithMarkdownV2(this.telegramService.formatTokens(response));
+      ctx.scene.leave();
     } catch (error) {
-      await ctx.reply('❌ Error. Try again later.');
+      console.log(error, "err")
     }
 
-    ctx.scene.leave();
   }
 }

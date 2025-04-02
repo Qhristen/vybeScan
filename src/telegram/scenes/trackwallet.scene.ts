@@ -23,7 +23,7 @@ export class TrackWalletScene {
 
   @WizardStep(1)
   async step2(@Context() ctx) {
-    ctx.scene.leave();
+
     ctx.wizard.state.userData = {};
     await ctx.reply('Enter wallet address:');
     ctx.wizard.next();
@@ -53,16 +53,16 @@ export class TrackWalletScene {
       const data = await this.vybeService.fetchTransactions(userData.walletAddress);
       await ctx.deleteMessage(Loading.message_id);
       if (!data && data.length < 0) {
+        ctx.scene.leave();
         return 
      }
-      console.log(data, 'data');
       ctx.replyWithMarkdownV2(this.telegramService.formatTransactions(data));
       ctx.reply(`✅ Tracking wallet: ${userData.walletAddress}`);
+      ctx.scene.leave();
     } catch (error) {
       console.log(error, "err")
-      await ctx.reply('❌ Error. Try again later.');
+      ctx.scene.leave();
     }
 
-    ctx.scene.leave();
   }
 }

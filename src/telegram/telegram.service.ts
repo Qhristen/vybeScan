@@ -79,6 +79,21 @@ ${tokens}
 \`\`\``;
   }
 
+  formatTopTokenHolders(holders: any[]): string {
+    const formattedHolders = holders.map((holder, index) => `
+  ${index + 1}. Holder Address: ${holder.ownerAddress}
+     ValueUsd: ${Number(holder.valueUsd).toFixed(2)}
+     Percentage: ${Number(holder.percentageOfSupplyHeld).toFixed(2)}%
+  `).join('\n');
+
+    return `\`\`\`
+  Top Token Holders
+  ----------------------------
+  ${formattedHolders}
+  ----------------------------
+  \`\`\``;
+  }
+
 
 
   formatWhaleAlert(data: any): string {
