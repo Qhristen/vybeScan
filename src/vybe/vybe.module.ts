@@ -1,9 +1,8 @@
 import { HttpModule } from '@nestjs/axios';
 import { forwardRef, Module } from '@nestjs/common';
-import { VybeService } from './vybe.service';
 import { SubscriptionModule } from 'src/subscription/subscription.module';
 import { TelegramModule } from 'src/telegram/telegram.module';
-import { VybeWebsocket } from './vybe.websoket';
+import { VybeService } from './vybe.service';
 
 @Module({
   imports: [
@@ -13,7 +12,8 @@ import { VybeWebsocket } from './vybe.websoket';
     forwardRef(() => TelegramModule),
   ],
   controllers: [],
-  providers: [VybeService, VybeWebsocket],
+  // Add websocket to provider
+  providers: [VybeService],
   exports: [VybeService],
 })
 export class VybeModule {}

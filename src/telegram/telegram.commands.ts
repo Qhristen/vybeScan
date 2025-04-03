@@ -9,7 +9,7 @@ export const COMMANDS = [
   },
   {
     command: '/checknftowner',
-    description: 'Check if address owns an NFT from a collection',
+    description: 'Check if address owns NFT from a collection',
   },
 
   // {
