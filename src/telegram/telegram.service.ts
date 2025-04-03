@@ -43,7 +43,7 @@ export class TelegramService {
 
   formatTokenMetrics(data: any): string {
     return `\`\`\`
-Token Metrics
+Token Details
 ----------------------------
 Name          | ${data.name}
 Symbol        | ${data.symbol}

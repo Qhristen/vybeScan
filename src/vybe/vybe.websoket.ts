@@ -84,7 +84,7 @@ export class VybeWebsocket implements OnModuleInit, OnModuleDestroy {
 
         const subscribedWallets =
           await this.subscriptionService.getAllSubscriptions();
-        this.logger.log(`formattedAmount: ${JSON.stringify(formattedAmount)}`);
+        // this.logger.log(`formattedAmount: ${JSON.stringify(formattedAmount)}`);
 
         const userSubscription = subscribedWallets.find((sub) =>
           sub.addresses.some((addr) => addr.value === mintAddress),
