@@ -21,18 +21,26 @@ export class ShowPortfolioScene {
 
   @WizardStep(1)
   async step2(@Context() ctx) {
+    
     ctx.wizard.state.userData = {};
-    await ctx.reply('Enter wallet address:');
+    const keyboard = Markup.inlineKeyboard([
+      Markup.button.callback('❌ Cancel', TELEGRAM_BTN_ACTIONS.CANCEL),
+    ]);
+
+    await ctx.reply('Enter wallet address:', keyboard);
     ctx.wizard.next();
   }
 
   @WizardStep(2)
   async step4(@Context() ctx) {
-    if (!ctx.message || !ctx.message.text) {
-      await ctx.reply('Invalid input. Please enter a valid wallet address:');
-      return;
+    // Handle Cancel via button
+    const action = ctx?.update?.callback_query?.data;
+    if (action === TELEGRAM_BTN_ACTIONS.CANCEL) {
+      await ctx.reply('❌ Operation cancelled.');
+      return ctx.scene.leave();
     }
-    const walletAddress = ctx.message.text.trim();
+
+    const walletAddress = ctx.message?.text.trim();
     ctx.wizard.state.userData.walletAddress = walletAddress;
     const { userData } = ctx.wizard.state;
 
@@ -46,8 +54,7 @@ export class ShowPortfolioScene {
       ctx.replyWithMarkdownV2(this.telegramService.formatTokens(response));
       ctx.scene.leave();
     } catch (error) {
-      console.log(error, "err")
+      console.log(error, 'err');
     }
-
   }
 }

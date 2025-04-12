@@ -1,9 +1,10 @@
 import { Context, Wizard, WizardStep } from 'nestjs-telegraf';
-import { SCENES } from 'src/common/constants';
+import { SCENES, TELEGRAM_BTN_ACTIONS } from 'src/common/constants';
 
 import { VybeService } from '../../vybe/vybe.service';
 import { TelegramService } from '../telegram.service';
 import { TelegramUtils } from '../telegram.utils';
+import { Markup } from 'telegraf';
 
 @Wizard(SCENES.NFT_COLLECTION)
 export class NFTCollectionAddressCheckerScene {
@@ -17,11 +18,15 @@ export class NFTCollectionAddressCheckerScene {
   }
 
   @WizardStep(1)
-  async step2(@Context() ctx) {
+  async step1(@Context() ctx) {
     try {
 
       ctx.wizard.state.userData = {};
-      await ctx.reply("Enter collection address:");
+       const keyboard = Markup.inlineKeyboard([
+            Markup.button.callback('❌ Cancel', TELEGRAM_BTN_ACTIONS.CANCEL),
+          ]);
+      
+      await ctx.reply("Enter collection address:", keyboard);
       ctx.wizard.next(); 
       
     } catch (error) {
@@ -31,16 +36,16 @@ export class NFTCollectionAddressCheckerScene {
   }
 
   @WizardStep(2)
-  async step3(@Context() ctx) {
+  async step2(@Context() ctx) {
     try {
       
-      if (!ctx.message || !ctx.message.text) {
-        await ctx.reply("Invalid input. Please enter a valid collection address:");
-        return;
-      }
+      ctx.wizard.state.userData.collectionAddress = ctx.message?.text.trim();
+
+      const keyboard = Markup.inlineKeyboard([
+        Markup.button.callback('❌ Cancel', TELEGRAM_BTN_ACTIONS.CANCEL),
+      ]);
   
-      ctx.wizard.state.userData.collectionAddress = ctx.message.text.trim();
-      await ctx.reply("Enter wallet address:");
+      await ctx.reply("Enter wallet address:", keyboard);
       
       ctx.wizard.next();
     } catch (error) {
@@ -50,12 +55,13 @@ export class NFTCollectionAddressCheckerScene {
   }
 
   @WizardStep(3)
-  async step4(@Context() ctx) {
-    if (!ctx.message || !ctx.message.text) {
-      await ctx.reply("Invalid input. Please enter a valid wallet address:");
-      return;
+  async step3(@Context() ctx) {
+    // Handle Cancel via button
+    const action = ctx?.update?.callback_query?.data;
+    if (action === TELEGRAM_BTN_ACTIONS.CANCEL) {
+      await ctx.reply('❌ Operation cancelled.');
+      return ctx.scene.leave();
     }
-
     const walletAddress = ctx.message.text.trim();
     ctx.wizard.state.userData.walletAddress = walletAddress;
     const { userData } = ctx.wizard.state;

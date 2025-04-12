@@ -1,13 +1,11 @@
 import { Context, Wizard, WizardStep } from 'nestjs-telegraf';
-import { SCENES } from 'src/common/constants';
-import { Markup } from 'telegraf';
+import { SCENES, TELEGRAM_BTN_ACTIONS } from 'src/common/constants';
 
+import { SubscriptionService } from 'src/subscription/subscription.service';
+import { VybeService } from '../../vybe/vybe.service';
 import { TelegramService } from '../telegram.service';
 import { TelegramUtils } from '../telegram.utils';
-import { TELEGRAM_BTN_ACTIONS } from '../../common/constants';
-import { VybeService } from '../../vybe/vybe.service';
-import { BOT_MESSAGES } from '../telegram.messages';
-import { SubscriptionService } from 'src/subscription/subscription.service';
+import { Markup } from 'telegraf';
 
 @Wizard(SCENES.TRACK_WALLET)
 export class TrackWalletScene {
@@ -22,22 +20,50 @@ export class TrackWalletScene {
   }
 
   @WizardStep(1)
-  async step2(@Context() ctx) {
-
+  async step1(@Context() ctx) {
     ctx.wizard.state.userData = {};
-    await ctx.reply('Enter wallet address:');
+
+    const keyboard = Markup.inlineKeyboard([
+      Markup.button.callback('❌ Cancel', TELEGRAM_BTN_ACTIONS.CANCEL),
+    ]);
+
+    await ctx.reply(
+      '🔍 Please enter the Solana wallet address you want to track:',
+      keyboard,
+    );
+    ctx.wizard.next();
+  }
+  @WizardStep(2)
+  async step2(@Context() ctx) {
+    // Handle Cancel via button
+    const action = ctx?.update?.callback_query?.data;
+    if (action === TELEGRAM_BTN_ACTIONS.CANCEL) {
+      await ctx.reply('❌ Tracking cancelled.');
+      return ctx.scene.leave();
+    }
+
+    const walletAddress = ctx.message?.text.trim();
+
+    const keyboard = Markup.inlineKeyboard([
+      Markup.button.callback('❌ Cancel', TELEGRAM_BTN_ACTIONS.CANCEL),
+    ]);
+
+    ctx.wizard.state.userData.walletAddress = walletAddress;
+    await ctx.reply('Enter wallet name:', keyboard);
     ctx.wizard.next();
   }
 
-  @WizardStep(2)
-  async step4(@Context() ctx) {
-    if (!ctx.message || !ctx.message.text) {
-      await ctx.reply('Invalid input. Please enter a valid wallet address:');
-      return;
+  @WizardStep(3)
+  async step3(@Context() ctx) {
+    // Handle Cancel via button
+    const action = ctx?.update?.callback_query?.data;
+    if (action === TELEGRAM_BTN_ACTIONS.CANCEL) {
+      await ctx.reply('❌ Tracking cancelled.');
+      return ctx.scene.leave();
     }
 
-    const walletAddress = ctx.message.text.trim();
-    ctx.wizard.state.userData.walletAddress = walletAddress;
+    const walletName = ctx?.message?.text.trim();
+    ctx.wizard.state.userData.walletName = walletName;
     const { userData } = ctx.wizard.state;
 
     try {
@@ -48,21 +74,17 @@ export class TrackWalletScene {
       await this.subscriptionService.subscribeUser(
         userId,
         userData.walletAddress,
+        userData.walletName,
         'track_alert',
       );
-      const data = await this.vybeService.fetchTransactions(userData.walletAddress);
       await ctx.deleteMessage(Loading.message_id);
-      if (!data && data.length < 0) {
-        ctx.scene.leave();
-        return 
-     }
-      ctx.replyWithMarkdownV2(this.telegramService.formatTransactions(data));
+
+      // ctx.replyWithMarkdownV2(this.telegramService.formatTransactions(data));
       ctx.reply(`✅ Tracking wallet: ${userData.walletAddress}`);
       ctx.scene.leave();
     } catch (error) {
-      console.log(error, "err")
+      console.log(error, 'err');
       ctx.scene.leave();
     }
-
   }
 }

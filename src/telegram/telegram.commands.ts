@@ -12,10 +12,10 @@ export const COMMANDS = [
     description: 'Check if address owns NFT from a collection',
   },
 
-  // {
-  //   command: '/trackwallet',
-  //   description: 'Receive alerts for transactions on that wallet',
-  // },
+  {
+    command: '/trackwallet',
+    description: 'Receive alerts for transactions on wallet address (wSol)',
+  },
   {
     command: '/token_holders',
     description: 'Retrieves the top 10 token holders. Data is updated every three hours',

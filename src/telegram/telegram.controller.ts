@@ -54,14 +54,14 @@ export class TelegramController {
     }
   }
 
-  // @Command('trackwallet')
-  // async trackwaller(ctx): Promise<any> {
-  //   try {
-  //     await ctx.scene.enter(SCENES.TRACK_WALLET, {});
-  //   } catch (error) {
-  //     console.log('TRACK_WALLET :::', error.message);
-  //   }
-  // }
+  @Command('trackwallet')
+  async trackwaller(ctx): Promise<any> {
+    try {
+      await ctx.scene.enter(SCENES.TRACK_WALLET, {});
+    } catch (error) {
+      console.log('TRACK_WALLET :::', error.message);
+    }
+  }
 
   @Command('token_detail')
   async tokenmetrics(ctx): Promise<any> {

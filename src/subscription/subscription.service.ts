@@ -9,23 +9,23 @@ export class SubscriptionService {
     @InjectModel(Subscription.name) public subscriptionModel: Model<Subscription>,
   ) {}
 
-  async subscribeUser(telegramUserId: string, walletAddress: string, type: string) {
+  async subscribeUser(telegramUserId: string, walletAddress: string, addressName: string, event: string) {
     const subscription = await this.subscriptionModel.findOne({ telegramUserId });
 
     if (subscription) {
       if (subscription.addresses.some(addr => addr.value === walletAddress)) {
         return { message: 'You are already subscribed to this address!' };
       }
-      subscription.addresses.push({ name: type, value: walletAddress });
+      subscription.addresses.push({ event, name: addressName, value: walletAddress });
       await subscription.save();
     } else {
-      await this.subscriptionModel.create({ telegramUserId, addresses: [{ name: type, value: walletAddress }] });
+      await this.subscriptionModel.create({ telegramUserId, addresses: [{event, name: addressName, value: walletAddress }] });
     }
 
     return { message: `Successfully subscribed to address: ${walletAddress}` };
   }
 
-  async unsubscribeUser(telegramUserId: string, walletAddress?: string) {
+  async unsubscribeUser(telegramUserId: string, walletAddress?: string,) {
     const subscription = await this.subscriptionModel.findOne({ telegramUserId });
 
     if (!subscription) {

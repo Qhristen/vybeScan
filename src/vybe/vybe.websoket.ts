@@ -57,11 +57,13 @@ export class VybeWebsocket implements OnModuleInit, OnModuleDestroy {
       const configureMessage = JSON.stringify({
         type: 'configure',
         filters: {
-          transfers: walletAddresses.map((address) => ({
-            tokenMintAddress: address.value,
-            minAmount: 1000000000,
-            maxAmount: 5000000000,
-          })),
+          transfers: [
+            {
+              tokenMintAddress: 'So11111111111111111111111111111111111111112',
+              minAmount: 1000000000,
+              maxAmount: 5000000000,
+            },
+          ],
         },
       });
       this.ws?.send(configureMessage);
@@ -84,20 +86,39 @@ export class VybeWebsocket implements OnModuleInit, OnModuleDestroy {
 
         const subscribedWallets =
           await this.subscriptionService.getAllSubscriptions();
-        // this.logger.log(`formattedAmount: ${JSON.stringify(formattedAmount)}`);
 
-        const userSubscription = subscribedWallets.find((sub) =>
-          sub.addresses.some((addr) => addr.value === mintAddress),
+        const matchingSubscriptions = subscribedWallets.filter((sub) =>
+          sub.addresses.some(
+            (addr) =>
+              addr.value === senderAddress || addr.value === receiverAddress,
+          ),
         );
 
-        if (userSubscription && formattedAmount >= 1000000) {
-          const alertMessage = `🐋 *Whale Alert!* ${senderAddress} sent *${formattedAmount} wSOL* to ${receiverAddress}. [View on Explorer](https://explorer.solana.com/tx/${signature})`;
+        if (matchingSubscriptions.length > 0) {
+          // This is a self-transfer for a tracked wallet
+          const alertMessage = `🔄 *Wallet Transaction Alert!* Address ${senderAddress} transferred *${formattedAmount}. [View on Explorer](https://explorer.solana.com/tx/${signature})`;
 
-          await this.telegramService.sendMarkdownMessage(
-            alertMessage,
-            userSubscription.telegramUserId,
-          );
+          matchingSubscriptions.forEach(async (sub) => {
+            await this.telegramService.sendMarkdownMessage(
+              alertMessage,
+              sub.telegramUserId,
+            );
+          });
         }
+
+        // if (userSubscription) {
+        //   if (userSubscription.addresses.some(
+        //     (addr) => addr.event === 'whale_alert'
+        //   ) && formattedAmount >= 1000000) {
+        //     const alertMessage = `🐋 *Whale Alert!* ${senderAddress} sent *${formattedAmount} to ${receiverAddress}. [View on Explorer](https://explorer.solana.com/tx/${signature})`;
+
+        //     await this.telegramService.sendMarkdownMessage(
+        //       alertMessage,
+        //       userSubscription.telegramUserId,
+        //     );
+        //   }
+
+        //   }
       } catch (error) {
         this.logger.error(`Failed to process message: ${error}`);
       }

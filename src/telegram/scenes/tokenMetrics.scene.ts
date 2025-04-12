@@ -20,20 +20,26 @@ export class TokenMetricsScene {
   }
 
   @WizardStep(1)
-  async step2(@Context() ctx) {
+  async step1(@Context() ctx) {
     ctx.wizard.state.userData = {};
-    await ctx.reply('Enter mint address:');
+     const keyboard = Markup.inlineKeyboard([
+          Markup.button.callback('❌ Cancel', TELEGRAM_BTN_ACTIONS.CANCEL),
+        ]);
+    
+    await ctx.reply('Enter mint address:', keyboard);
     ctx.wizard.next();
   }
 
   @WizardStep(2)
-  async step4(@Context() ctx) {
-    if (!ctx.message || !ctx.message.text) {
-      await ctx.reply('Invalid input. Please enter a valid wallet address:');
-      return;
-    }
+  async step2(@Context() ctx) {
+   // Handle Cancel via button
+   const action = ctx?.update?.callback_query?.data;
+   if (action === TELEGRAM_BTN_ACTIONS.CANCEL) {
+     await ctx.reply('❌ Operation cancelled.');
+     return ctx.scene.leave();
+   }
 
-    const mintAddress = ctx.message.text.trim();
+    const mintAddress = ctx.message?.text.trim();
     ctx.wizard.state.userData.mintAddress = mintAddress;
     const { userData } = ctx.wizard.state;
 

@@ -10,8 +10,8 @@ export class Subscription {
   @Prop({ required: true, unique: true })
   telegramUserId: string;
 
-  @Prop({ type: [{ name: String, value: String }], default: [] })
-  addresses: { name: string; value: string; }[];
+  @Prop({ type: [{ event: String, name: String, value: String }], default: [] })
+  addresses: { event: string; name: string; value: string; }[];
 }
 
 export const SubscriptionSchema = SchemaFactory.createForClass(Subscription);
