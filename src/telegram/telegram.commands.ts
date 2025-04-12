@@ -24,10 +24,10 @@ export const COMMANDS = [
     command: '/token_detail',
     description: `Useful for overview of a token's past 24 hours' activity.`,
   },
-  {
-    command: '/whalealert',
-    description: 'Sends notifications for large transactions',
-  },
+  // {
+  //   command: '/whalealert',
+  //   description: 'Sends notifications for large transactions',
+  // },
   {
     command: '/subscriptions',
     description: 'Show all subscriptions',
