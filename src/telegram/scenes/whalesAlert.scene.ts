@@ -42,6 +42,13 @@ export class WhalesAlertScene {
     const mintAddress = ctx.message?.text.trim();
     ctx.wizard.state.userData.mintAddress = mintAddress;
 
+    const { userData } = ctx.wizard.state;
+
+    if(!this.telegramService.isValidSolanaAddress(userData.mintAddress)){
+      await ctx.reply('❌ Please enter a valid Solana token address.');
+      // return ctx.scene.leave();
+    }
+
     const keyboard = Markup.inlineKeyboard([
       Markup.button.callback('❌ Cancel', TELEGRAM_BTN_ACTIONS.CANCEL),
     ]);
@@ -65,8 +72,7 @@ export class WhalesAlertScene {
 
     try {
       const userId = ctx.from.id.toString();
-
-      const Loading = await ctx.reply(`Loading...`);
+      await ctx.sendChatAction('typing');
       await this.subscriptionService.subscribeUser(
         userId,
         userData.mintAddress,
@@ -74,7 +80,6 @@ export class WhalesAlertScene {
         'whale_alert',
       );
 
-      await ctx.deleteMessage(Loading.message_id);
       ctx.reply(
         `✅ Tracking mint address for 🐋 Whale Alert!: ${userData.mintAddress}`,
       );

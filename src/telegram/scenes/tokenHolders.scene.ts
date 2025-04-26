@@ -45,12 +45,15 @@ export class TokenHoldersScene {
     ctx.wizard.state.userData.mintAddress = mintAddress;
     const { userData } = ctx.wizard.state;
 
+    if(!this.telegramService.isValidSolanaAddress(userData.mintAddress)){
+      await ctx.reply('❌ Please enter a valid Solana token address.');
+      // return ctx.scene.leave();
+    }
     
     try {
-      const Loading = await ctx.reply(`Loading...`);
+      await ctx.sendChatAction('typing');
     const data =  await this.vybeService.getTopTokenHolders(userData.mintAddress)
 
-      await ctx.deleteMessage(Loading.message_id);
          ctx.replyWithMarkdownV2(this.telegramService.formatTopTokenHolders(data));
 
       ctx.scene.leave();

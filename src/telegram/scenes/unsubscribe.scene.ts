@@ -43,14 +43,18 @@ export class UnsubscribeScene {
     ctx.wizard.state.userData.address = address;
     const { userData } = ctx.wizard.state;
 
+    if(!this.telegramService.isValidSolanaAddress(userData.address)){
+      await ctx.reply('❌ Please enter a valid Solana address.');
+      // return ctx.scene.leave();
+    }
+
     try {
-      const Loading = await ctx.reply(`Loading...`);
+      await ctx.sendChatAction('typing');
       const response = await this.subscriptionService.unsubscribeUser(
         ctx.from.id.toString(),
         userData.address,
       );
 
-      await ctx.deleteMessage(Loading.message_id);
       ctx.reply(response.message);
       ctx.scene.leave();
     } catch (error) {

@@ -30,6 +30,11 @@ export class TelegramService {
     return this.userService.update(params, updateUserDto);
   }
 
+  isValidSolanaAddress(walletAddress: string): boolean {
+    const solanaAddressRegex = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+    return solanaAddressRegex.test(walletAddress);
+  }
+
   async sendMarkdownMessage(message: string, chatId: string) {
     try {
       await this.bot.telegram.sendMessage(chatId, message, {

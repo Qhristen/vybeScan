@@ -43,15 +43,18 @@ export class TokenMetricsScene {
     ctx.wizard.state.userData.mintAddress = mintAddress;
     const { userData } = ctx.wizard.state;
 
+    if(!this.telegramService.isValidSolanaAddress(userData.mintAddress)){
+      await ctx.reply('❌ Please enter a valid Solana token address.');
+      // return ctx.scene.leave();
+    }
+
     try {
-      const Loading = await ctx.reply(`Loading...`);
+      await ctx.sendChatAction('typing');
       const data = await this.vybeService.getTokenMetrics(userData.mintAddress);
       if (!data) {
          ctx.reply('❌ Token data not found.');
          ctx.scene.leave();
       }
-
-      await ctx.deleteMessage(Loading.message_id);
       ctx.replyWithMarkdownV2(this.telegramService.formatTokenMetrics(data));
       ctx.scene.leave();
     } catch (error) {

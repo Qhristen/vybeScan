@@ -37,20 +37,24 @@ export class ShowPortfolioScene {
     const action = ctx?.update?.callback_query?.data;
     if (action === TELEGRAM_BTN_ACTIONS.CANCEL) {
       await ctx.reply('❌ Operation cancelled.');
-      return ctx.scene.leave();
+      // return ctx.scene.leave();
     }
 
     const walletAddress = ctx.message?.text.trim();
     ctx.wizard.state.userData.walletAddress = walletAddress;
     const { userData } = ctx.wizard.state;
 
+    if(!this.telegramService.isValidSolanaAddress(userData.walletAddress)){
+      await ctx.reply('❌ Please enter a valid Solana wallet address.');
+      return ctx.scene.leave();
+    }
+    
     try {
-      const Loading = await ctx.reply(`Loading...`);
+      await ctx.sendChatAction('typing');
       const response = await this.vybeService.tokenBalances(
         userData.walletAddress,
       );
 
-      await ctx.deleteMessage(Loading.message_id);
       ctx.replyWithMarkdownV2(this.telegramService.formatTokens(response));
       ctx.scene.leave();
     } catch (error) {

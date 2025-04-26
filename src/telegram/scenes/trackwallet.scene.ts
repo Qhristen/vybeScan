@@ -49,6 +49,12 @@ export class TrackWalletScene {
     ]);
 
     ctx.wizard.state.userData.walletAddress = walletAddress;
+    const { userData } = ctx.wizard.state;
+    if(!this.telegramService.isValidSolanaAddress(userData.walletAddress)){
+      await ctx.reply('❌ Please enter a valid Solana wallet address.');
+      // return ctx.scene.leave();
+      return
+    }
     await ctx.reply('Enter wallet name:', keyboard);
     ctx.wizard.next();
   }
@@ -66,19 +72,18 @@ export class TrackWalletScene {
     ctx.wizard.state.userData.walletName = walletName;
     const { userData } = ctx.wizard.state;
 
+
     try {
       // Subscribe user to wallet tracking
       const userId = ctx.from.id.toString();
-
-      const Loading = await ctx.reply(`Loading...`);
+      await ctx.sendChatAction('typing');
       await this.subscriptionService.subscribeUser(
         userId,
         userData.walletAddress,
         userData.walletName,
         'track_alert',
       );
-      await ctx.deleteMessage(Loading.message_id);
-
+      
       // ctx.replyWithMarkdownV2(this.telegramService.formatTransactions(data));
       ctx.reply(`✅ Tracking wallet: ${userData.walletAddress}`);
       ctx.scene.leave();

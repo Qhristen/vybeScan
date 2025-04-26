@@ -128,7 +128,7 @@ export class TelegramController {
   @Command('subscriptions')
   async subscriptions(ctx: Context) {
     try {
-      const Loading = await ctx.reply(`Loading...`);
+      await ctx.sendChatAction("typing");
       const subscription = await this.subscriptionService.getUserSubscriptions(
         ctx.from.id.toString(),
       );
@@ -147,7 +147,6 @@ export class TelegramController {
     \`\`\``,
         )
         .join('\n');
-      await ctx.deleteMessage(Loading.message_id);
       ctx.replyWithMarkdownV2(`${walletList}`);
 
     } catch (error) {
